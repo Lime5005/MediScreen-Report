@@ -1,5 +1,6 @@
 package com.lime.mediscreenreport.proxy;
 
+import com.lime.mediscreenreport.config.FeignPropagateBadRequestsConfiguration;
 import com.lime.mediscreenreport.model.Patient;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Component
-@FeignClient(value = "mediscreen-patient", url = "${patient.serviceUrl}")
+@FeignClient(value = "mediscreen-patient", url = "${patient.serviceUrl}", configuration = FeignPropagateBadRequestsConfiguration.class)
 public interface PatientFeignProxy {
 
     @GetMapping("/api/patients/{id}")

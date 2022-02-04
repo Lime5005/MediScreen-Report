@@ -1,10 +1,12 @@
 package com.lime.mediscreenreport.service;
 
+import com.lime.mediscreenreport.config.FeignBadResponseWrapper;
 import com.lime.mediscreenreport.model.Gender;
 import com.lime.mediscreenreport.model.Patient;
 import com.lime.mediscreenreport.model.Record;
 import com.lime.mediscreenreport.proxy.PatientFeignProxy;
 import com.lime.mediscreenreport.proxy.RecordFeignProxy;
+import com.netflix.hystrix.exception.HystrixBadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,26 +26,43 @@ public class ReportService {
     }
 
     public Patient getPatientInfo(Long patientId) {
-        ResponseEntity<Patient> patientById = patientFeignProxy.getPatientById(patientId);
-        if (patientById == null) return null;
-        return patientById.getBody();
+        //This approach doesn't work, it will not return null, but an error.
+//        ResponseEntity<Patient> patientById = patientFeignProxy.getPatientById(patientId);
+//        if (patientById.getStatusCodeValue() == 400) {
+//            return null;
+//        }
+//        return patientById.getBody();
+        try {
+            return patientFeignProxy.getPatientById(patientId).getBody();
+        } catch (HystrixBadRequestException he) {
+            if (he instanceof FeignBadResponseWrapper) {
+                return null;
+            } else {
+                return null;
+            }
+        }
     }
 
     public List<Record> getPatientRecords(Long patientId) {
-        ResponseEntity<List<Record>> patientRecords = recordFeignProxy.getOnePatientRecords(patientId);
-        if (!patientRecords.getStatusCode().is2xxSuccessful()) {
-            return null;
+        try {
+            return recordFeignProxy.getOnePatientRecords(patientId).getBody();
+        } catch (HystrixBadRequestException he) {
+            if (he instanceof FeignBadResponseWrapper) {
+                return null;
+            } else {
+                return null;
+            }
         }
-        return patientRecords.getBody();
     }
 
     public String calculateRiskByPatientId(Long patientId) {
         Patient patientInfo = getPatientInfo(patientId);
         List<Record> patientRecords = getPatientRecords(patientId);
-        if (patientId == null || patientInfo == null || patientRecords.isEmpty()) return null;
+        if (patientId == null || patientInfo == null || patientRecords == null) return null;
 
         Integer age = getPatientAge(patientInfo.getBirthDate());
         Gender sex = patientInfo.getSex();
+
         Integer terms = getTotalTriggerTerms(patientRecords);
 
         String assessment = "";
@@ -102,8 +121,8 @@ public class ReportService {
         terms.add("Microalbumine");
         terms.add("Taille");
         terms.add("Poids");
-        terms.add("Fumeur");
-        terms.add("Anormale");
+        terms.add("Fume");
+        terms.add("Anormal");
         terms.add("Cholestérol");
         terms.add("Vertige");
         terms.add("Rechute");
