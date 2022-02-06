@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@Component
 @FeignClient(value = "mediscreen-patient", url = "${patient.serviceUrl}", configuration = FeignPropagateBadRequestsConfiguration.class)
 public interface PatientFeignProxy {
 

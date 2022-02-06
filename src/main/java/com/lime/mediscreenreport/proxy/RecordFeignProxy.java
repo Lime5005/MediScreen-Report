@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@Component
 @FeignClient(value = "mediscreen-record", url = "${record.serviceUrl}", configuration = FeignPropagateBadRequestsConfiguration.class)
 public interface RecordFeignProxy {
 

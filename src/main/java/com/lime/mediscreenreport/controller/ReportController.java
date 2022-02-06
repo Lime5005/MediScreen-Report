@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.*;
 public class ReportController {
     Logger logger = LoggerFactory.getLogger(ReportController.class);
 
-    @Autowired
-    private ReportService reportService;
+
+    private final ReportService reportService;
+
+    public ReportController(ReportService reportService) {
+        this.reportService = reportService;
+    }
 
     @GetMapping("/assessment/{patientId}")
     public ResponseEntity<String> getRiskAssessment(@PathVariable(value = "patientId") Long patientId) {

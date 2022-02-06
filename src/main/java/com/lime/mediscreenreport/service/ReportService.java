@@ -7,7 +7,6 @@ import com.lime.mediscreenreport.model.Record;
 import com.lime.mediscreenreport.proxy.PatientFeignProxy;
 import com.lime.mediscreenreport.proxy.RecordFeignProxy;
 import com.netflix.hystrix.exception.HystrixBadRequestException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,8 +16,8 @@ import java.util.*;
 @Service
 public class ReportService {
 
-    private PatientFeignProxy patientFeignProxy;
-    private RecordFeignProxy recordFeignProxy;
+    private final PatientFeignProxy patientFeignProxy;
+    private final RecordFeignProxy recordFeignProxy;
 
     public ReportService(PatientFeignProxy patientFeignProxy, RecordFeignProxy recordFeignProxy) {
         this.patientFeignProxy = patientFeignProxy;
