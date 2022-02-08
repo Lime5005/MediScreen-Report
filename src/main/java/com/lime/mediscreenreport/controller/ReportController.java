@@ -1,6 +1,8 @@
 package com.lime.mediscreenreport.controller;
 
 import com.lime.mediscreenreport.service.ReportService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
+@Api(tags = "Report's data API")
 @RequestMapping("/api")
 public class ReportController {
     Logger logger = LoggerFactory.getLogger(ReportController.class);
@@ -22,6 +25,7 @@ public class ReportController {
     }
 
     @GetMapping("/assessment/{patientId}")
+    @ApiOperation("Generate a diabetes assessment by patient's ID")
     public ResponseEntity<String> getRiskAssessment(@PathVariable(value = "patientId") Long patientId) {
         String risk = reportService.calculateRiskByPatientId(patientId);
         if (risk == null) {
